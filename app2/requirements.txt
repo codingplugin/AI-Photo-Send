@@ -1,4 +1,0 @@
-Flask
-Flask-Login
-Flask-SocketIO
-eventlet 
