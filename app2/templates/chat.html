@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Chat - Face Recognition App{% endblock %}
+{% block content %}
+<div class="row" style="height:70vh;">
+  <div class="col-3 border-end" style="overflow-y:auto;">
+    <h5 class="mt-2">Friends</h5>
+    <ul class="list-group" id="friend-list">
+      {% for friend in friends %}
+        <li class="list-group-item list-group-item-action" data-friend-id="{{ friend['id'] }}" data-friend-name="{{ friend['username'] }}" style="cursor:pointer;">
+          {{ friend['username'] }} ({{ friend['unique_id'] }})
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-9 d-flex flex-column" style="height:100%;">
+    <div class="flex-grow-1 border-bottom" id="chat-window" style="overflow-y:auto; height:60vh;"></div>
+    <form id="chat-form" class="d-flex mt-2" style="display:none;">
+      <input type="text" class="form-control me-2" id="chat-input" placeholder="Type a message...">
+      <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+$(function() {
+  const socket = io();
+  const userId = {{ current_user.id }};
+  let currentFriendId = null;
+  let currentFriendName = '';
+  // Sidebar click
+  $('#friend-list').on('click', 'li', function() {
+    currentFriendId = $(this).data('friend-id');
+    currentFriendName = $(this).data('friend-name');
+    $('#chat-window').html('<div class="text-center text-muted mt-3">Loading chat with ' + currentFriendName + '...</div>');
+    $('#chat-form').show();
+    socket.emit('join', {room: userId});
+    loadHistory();
+  });
+  // Load chat history
+  function loadHistory() {
+    $.get('/chat_history/' + currentFriendId, function(data) {
+      $('#chat-window').empty();
+      data.messages.forEach(msg => renderMessage(msg));
+      $('#chat-window').scrollTop($('#chat-window')[0].scrollHeight);
+    });
+  }
+  // Send message
+  $('#chat-form').on('submit', function(e) {
+    e.preventDefault();
+    const text = $('#chat-input').val();
+    if (text && currentFriendId) {
+      socket.emit('send_message', {sender_id: userId, receiver_id: currentFriendId, content: text, msg_type: 'text'});
+      $('#chat-input').val('');
+    }
+  });
+  // Receive message
+  socket.on('receive_message', function(msg) {
+    if ((msg.sender_id == userId && msg.receiver_id == currentFriendId) || (msg.sender_id == currentFriendId && msg.receiver_id == userId)) {
+      renderMessage(msg);
+      $('#chat-window').scrollTop($('#chat-window')[0].scrollHeight);
+    }
+  });
+  function renderMessage(msg) {
+    let html = '';
+    if (msg.msg_type === 'text') {
+      html = `<div class="mb-2 ${msg.sender_id == userId ? 'text-end' : 'text-start'}"><span class="badge bg-${msg.sender_id == userId ? 'primary' : 'secondary'}">${msg.content}</span></div>`;
+    }
+    $('#chat-window').append(html);
+  }
+});
+</script>
+{% endblock %} 

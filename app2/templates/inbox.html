@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Inbox - Face Recognition App{% endblock %}
+{% block content %}
+<h2>Inbox</h2>
+{% if grouped %}
+  <form method="post" action="/download_all_photos" class="d-inline">
+    <button type="submit" class="btn btn-success mb-3">Download All</button>
+  </form>
+  <form method="post" action="/clear_inbox" class="d-inline ms-2">
+    <button type="submit" class="btn btn-danger mb-3">Clear All Photos</button>
+  </form>
+  {% for (sender_name, sender_id), photos in grouped.items() %}
+    <div class="card mb-4">
+      <div class="card-header">
+        <b>{{ sender_name }}</b> (ID: {{ sender_id }}) shared photos
+      </div>
+      <div class="card-body d-flex flex-wrap">
+        {% for photo in photos %}
+          <div class="m-2 text-center">
+            <img src="/static/shared_photos/{{ photo['filename'] }}" class="img-thumbnail inbox-thumb" style="width:100px; height:100px; object-fit:cover; cursor:pointer;" data-bs-toggle="modal" data-bs-target="#imgModal{{ photo['id'] }}">
+            <div>{{ photo['person_name'] }}</div>
+            <div class="mt-1">
+              <a href="{{ url_for('download_photo', photo_id=photo['id'], ext='jpg') }}" class="btn btn-sm btn-primary">JPG</a>
+              <a href="{{ url_for('download_photo', photo_id=photo['id'], ext='png') }}" class="btn btn-sm btn-secondary">PNG</a>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="imgModal{{ photo['id'] }}" tabindex="-1" aria-labelledby="imgModalLabel{{ photo['id'] }}" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <img src="/static/shared_photos/{{ photo['filename'] }}" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No photos shared with you yet.</p>
+{% endif %}
+<style>
+.inbox-thumb:hover { box-shadow: 0 0 8px #007bff; }
+</style>
+{% endblock %} 

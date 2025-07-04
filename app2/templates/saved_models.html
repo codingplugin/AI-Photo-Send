@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Saved Models - Face Recognition App{% endblock %}
+{% block content %}
+<h2>Saved Models</h2>
+{% if models %}
+  <ul class="list-group">
+    {% for model in models %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ model }}</span>
+        <div>
+          <button type="button" class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#renameModal{{ loop.index }}">Edit</button>
+          <form method="post" action="/saved_models" style="display:inline;">
+            <input type="hidden" name="model_file" value="{{ model }}">
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this model?');">Delete</button>
+          </form>
+        </div>
+      </li>
+      <!-- Rename Modal -->
+      <div class="modal fade" id="renameModal{{ loop.index }}" tabindex="-1" aria-labelledby="renameModalLabel{{ loop.index }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <form method="post" action="/rename_model">
+              <div class="modal-header">
+                <h5 class="modal-title" id="renameModalLabel{{ loop.index }}">Rename Model</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" name="old_model" value="{{ model }}">
+                <div class="mb-3">
+                  <label for="new_model{{ loop.index }}" class="form-label">New Model Name</label>
+                  <input type="text" class="form-control" id="new_model{{ loop.index }}" name="new_model" required placeholder="Enter new model name">
+                  <div class="form-text">Do not include .pkl or special characters.</div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Rename</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No models saved yet.</p>
+{% endif %}
+{% endblock %} 

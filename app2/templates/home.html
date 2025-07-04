@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Home - Face Recognition App{% endblock %}
+{% block content %}
+<style>
+.hero-bg {
+  background: linear-gradient(120deg, #232526 0%, #414345 100%);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(30,40,90,0.18);
+  position: relative;
+  overflow: hidden;
+}
+.hero-corner {
+  position: absolute;
+  z-index: 0;
+}
+.hero-corner.top-left {
+  top: -60px;
+  left: -60px;
+  width: 180px;
+  opacity: 0.25;
+}
+.hero-corner.bottom-right {
+  bottom: -60px;
+  right: -60px;
+  width: 220px;
+  opacity: 0.18;
+}
+</style>
+<div class="py-5 hero-bg">
+  <!-- Decorative SVG corners -->
+  <svg class="hero-corner top-left" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#4e54c8" d="M44.8,-67.7C58.2,-60.2,68.7,-48.2,75.2,-34.6C81.7,-21,84.2,-5.8,80.2,7.7C76.2,21.2,65.7,33,54.1,44.2C42.5,55.4,29.8,66,14.2,73.2C-1.4,80.4,-19.9,84.2,-34.2,77.2C-48.5,70.2,-58.6,52.4,-65.2,35.1C-71.8,17.8,-74.9,0.9,-71.2,-14.2C-67.5,-29.3,-57,-42.6,-44.2,-50.7C-31.4,-58.8,-15.7,-61.7,-0.2,-61.5C15.3,-61.3,30.6,-58.2,44.8,-67.7Z" transform="translate(100 100)"/></svg>
+  <svg class="hero-corner bottom-right" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#8f94fb" d="M44.8,-67.7C58.2,-60.2,68.7,-48.2,75.2,-34.6C81.7,-21,84.2,-5.8,80.2,7.7C76.2,21.2,65.7,33,54.1,44.2C42.5,55.4,29.8,66,14.2,73.2C-1.4,80.4,-19.9,84.2,-34.2,77.2C-48.5,70.2,-58.6,52.4,-65.2,35.1C-71.8,17.8,-74.9,0.9,-71.2,-14.2C-67.5,-29.3,-57,-42.6,-44.2,-50.7C-31.4,-58.8,-15.7,-61.7,-0.2,-61.5C15.3,-61.3,30.6,-58.2,44.8,-67.7Z" transform="translate(100 100)"/></svg>
+  <div class="container text-center text-white position-relative" style="z-index:1;">
+    <img src="https://img.icons8.com/ios-filled/100/ffffff/face-id.png" width="80" height="80" class="mb-3"/>
+    <h1 class="display-4 fw-bold mb-3">Welcome to FaceRecog!</h1>
+    <p class="lead mb-4">FaceRecog is your all-in-one platform for face recognition, friend management, and secure photo sharing.<br>
+      <span class="fw-semibold">Features:</span>
+      <ul class="list-unstyled d-inline-block text-start mt-2 mb-4" style="max-width: 500px;">
+        <li>• Train your own face models with just a few images and any name you choose.</li>
+        <li>• Predict faces in photos and share them securely with friends.</li>
+        <li>• Real-time chat and photo sharing, just like WhatsApp.</li>
+        <li>• Manage your friends, accept requests, and build your private network.</li>
+        <li>• Download all received photos in one click, and clear your data anytime.</li>
+      </ul>
+    </p>
+  </div>
+</div>
+{% endblock %} 
