@@ -1,0 +1,12 @@
+Flask
+Flask-Login
+Flask-Migrate
+Flask-SocketIO
+Flask-SQLAlchemy
+deepface
+face-recognition
+face_recognition_models
+numpy
+opencv-python
+scikit-learn
+eventlet
