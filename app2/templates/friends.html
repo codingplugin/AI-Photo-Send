@@ -36,7 +36,13 @@
 {% if friends %}
   <ul class="list-group">
     {% for friend in friends %}
-      <li class="list-group-item">{{ friend['username'] }} (ID: {{ friend['unique_id'] }})</li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ friend['username'] }} (ID: {{ friend['unique_id'] }})</span>
+        <form method="post" style="display:inline;">
+          <input type="hidden" name="unfriend_id" value="{{ friend['id'] }}">
+          <button type="submit" class="btn btn-danger btn-sm">Unfriend</button>
+        </form>
+      </li>
     {% endfor %}
   </ul>
 {% else %}

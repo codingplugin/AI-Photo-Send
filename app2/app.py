@@ -220,7 +220,7 @@ def predict():
                 result_imgs[filename] = base64.b64encode(buffer).decode('utf-8')
     # Fetch friends for the modal
     conn = get_db()
-    friends = conn.execute('SELECT u.id, u.username, u.unique_id FROM friendships f JOIN users u ON f.friend_id = u.id WHERE f.user_id = ?', (current_user.id,)).fetchall()
+    friends = conn.execute('''SELECT u.id, u.username, u.unique_id FROM friendships f JOIN users u ON f.friend_id = u.id WHERE f.user_id = ?''', (current_user.id,)).fetchall()
     conn.close()
     # Fetch user's credit requests
     conn2 = get_db()
@@ -272,10 +272,17 @@ def friends():
                 conn.execute('UPDATE friend_requests SET status = ? WHERE id = ?', ('rejected', req_id))
                 conn.commit()
                 message = 'Friend request rejected.'
+        if 'unfriend_id' in request.form:
+            unfriend_id = request.form.get('unfriend_id')
+            # Remove both directions of friendship
+            conn.execute('DELETE FROM friendships WHERE user_id = ? AND friend_id = ?', (current_user.id, unfriend_id))
+            conn.execute('DELETE FROM friendships WHERE user_id = ? AND friend_id = ?', (unfriend_id, current_user.id))
+            conn.commit()
+            message = 'Friend removed successfully.'
     # Pending requests for current user
     pending_requests = conn.execute('''SELECT fr.id, u.username, u.unique_id FROM friend_requests fr JOIN users u ON fr.from_user_id = u.id WHERE fr.to_user_id = ? AND fr.status = 'pending' ''', (current_user.id,)).fetchall()
     # Friends list
-    friends = conn.execute('''SELECT u.username, u.unique_id FROM friendships f JOIN users u ON f.friend_id = u.id WHERE f.user_id = ?''', (current_user.id,)).fetchall()
+    friends = conn.execute('''SELECT u.id, u.username, u.unique_id FROM friendships f JOIN users u ON f.friend_id = u.id WHERE f.user_id = ?''', (current_user.id,)).fetchall()
     conn.close()
     return render_template('friends.html', pending_requests=pending_requests, friends=friends, message=message)
 

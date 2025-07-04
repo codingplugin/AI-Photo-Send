@@ -47,7 +47,7 @@
                 <h5 class="modal-title" id="sendModalLabel{{ loop.index }}">Send to Friend</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <form method="post" action="/send_photos">
+              <form id="sendPhotosForm{{ loop.index }}" class="send-photos-form" data-person="{{ person }}" action="/send_photos" method="post">
                 <div class="modal-body">
                   <input type="hidden" name="person" value="{{ person }}">
                   {% for file in files %}
@@ -64,7 +64,8 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary">Send</button>
+                  <button type="submit" class="btn btn-primary send-btn" data-person="{{ person }}">Send</button>
+                  <span class="text-success ms-3" style="display:none;" id="sendSuccess{{ loop.index }}">Sent!</span>
                 </div>
               </form>
             </div>
@@ -115,5 +116,65 @@
 <div class="alert alert-info mt-2">Note: You cannot send photos to yourself, even if you are detected in the image.</div>
 <style>
 .predict-thumb:hover { box-shadow: 0 0 8px #007bff; }
+
+/* Style the modal background and text */
+.modal-content {
+  background: #23272a !important;
+  color: #f8f9fa !important;
+  border-radius: 16px;
+  border: 1.5px solid #444;
+}
+
+/* Style modal header and footer */
+.modal-header, .modal-footer {
+  background: #23272a !important;
+  color: #f8f9fa !important;
+  border: none;
+}
+
+/* Style the select dropdown in the modal */
+.modal-content .form-select {
+  background: #181a1b !important;
+  color: #f8f9fa !important;
+  border: 1px solid #444;
+}
+
+.modal-content .form-select:focus {
+  background: #181a1b !important;
+  color: #f8f9fa !important;
+  border-color: #8f94fb;
+  box-shadow: 0 0 0 0.2rem rgba(143,148,251,0.15);
+}
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.send-photos-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.ok ? response.text() : Promise.reject())
+      .then(() => {
+        // Hide the send button for this person
+        const sendBtn = form.querySelector('.send-btn');
+        sendBtn.style.display = 'none';
+        // Optionally, close the modal after a short delay
+        setTimeout(() => {
+          const modal = form.closest('.modal');
+          if (modal) {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) modalInstance.hide();
+          }
+        }, 800);
+      })
+      .catch(() => {
+        alert('Failed to send. Try again.');
+      });
+    });
+  });
+});
+</script>
 {% endblock %} 
